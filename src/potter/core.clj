@@ -1,5 +1,4 @@
-(ns potter.core
-  (:require [clojure.math.combinatorics :as combo]))
+(ns potter.core)
 
 (def book-price 8)
 
@@ -13,13 +12,26 @@
 
 (defn price
   [books]
-  (loop [counts (->> books frequencies vals sort)
+
+  ;; Separate the books into piles of individual books
+  (loop [book-piles (->> books frequencies vals sort)
          total 0]
-    (if (seq counts)
-      ;; Two four-book stacks are cheaper than two stacks of three and
-      ;; five unique books each. Catch that special case here.
-      (if (= '(1 1 2 2 2) counts)
+
+    ;; Any more piles of books left?
+    (if (seq book-piles)
+
+      ;; Do we hit the special case where two four-book stacks are
+      ;; cheaper than two stacks of three and five unique books each?
+      (if (= '(1 1 2 2 2) book-piles)
+
+        ;; Return current total plus the cost of two stacks of four
+        ;; unique books.
         (+ total (* 2 (fast-price-lookup 4)))
-        (recur (->> counts (map dec) (remove zero?))
-               (+ total (fast-price-lookup (count counts)))))
+
+        ;; Take one book from each remaining pile & add the cost of
+        ;; this stack of books to the running total.
+        (recur (->> book-piles (map dec) (remove zero?))
+               (+ total (fast-price-lookup (count book-piles)))))
+
+      ;; No more piles of books left; return total.
       total)))
