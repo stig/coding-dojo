@@ -1,54 +1,25 @@
 (ns potter.core
   (:require [clojure.math.combinatorics :as combo]))
 
-(def discounts {2 5/100
-                3 10/100
-                4 20/100
-                5 25/100})
-
-(defn multiplier [n]
-  (- 1 (or (discounts n) 0)))
-
 (def book-price 8)
 
-(defn price-partition
-  [books]
-  (let [unique (count (distinct books))
-        mult (multiplier unique)]
-    (* book-price
-       (+ (* unique mult)
-          (* (- (count books) unique))))))
+(def fast-price-lookup
+  "Pre-calculated prices (with discount) for a stack of up to 5 distinct books.'"
+  {1 book-price
+   2 (* 2 book-price 95/100)
+   3 (* 3 book-price 9/10)
+   4 (* 4 book-price 8/10)
+   5 (* 5 book-price 75/100)})
 
-(defn price-partition-seq
-  [partitions]
-  (->> partitions
-       (map price-partition)
-       (reduce +)))
-
-(defn best-price
-  [books]
-  (->> books
-       combo/partitions
-       (map price-partition-seq)
-       sort
-       first))
-
-(defn fast-price
+(defn price
   [books]
   (loop [counts (->> books frequencies vals sort)
          total 0]
     (if (seq counts)
-      (let [c (first counts)
-            n (count counts)
-            p (* c (price-partition (take n (iterate inc 1))))]
-        (recur (->> counts
-                    (map #(- % c))
-                    (remove zero?))
-               (+ total p)))
+      ;; Two four-book stacks are cheaper than two stacks of three and
+      ;; five unique books each. Catch that special case here.
+      (if (= '(1 1 2 2 2) counts)
+        (+ total (* 2 (fast-price-lookup 4)))
+        (recur (->> counts (map dec) (remove zero?))
+               (+ total (fast-price-lookup (count counts)))))
       total)))
-
-(defn price
-  [books]
-  (if (< (count books) 10)
-    (best-price books)
-    (fast-price books)))
