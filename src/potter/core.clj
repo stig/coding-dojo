@@ -62,29 +62,36 @@
 
 (defn picks-completely?
   "Is it possible to pick the given partitions from the stacks of books,
-  such that all the stacks are used up and we don't have partitions
-  left to pick?"
+  such that all the stacks are used up?"
   [parts stacks]
   (loop [stacks stacks
-         combinations (pick-combinations stacks (first parts))
-         parts (rest parts)
-         backtrack-info []]
-    (if (empty? combinations)
-      (if (empty? backtrack-info)
+         potential-picks (pick-combinations stacks (first parts))
+         remaining-parts (rest parts)
+         backtrack-stack []]
+
+    ;; Have we reached a dead end?
+    (if (empty? potential-picks)
+
+      ;; Can we backtrack to try a different path?
+      (if (empty? backtrack-stack)
         false
-        (let [prev (peek backtrack-info)
-              b (nth prev 0)
-              c (nth prev 1)
-              p (nth prev 2)]
-          ;; Backtrack trying alternative combinations
-          (recur b (rest c) p (pop backtrack-info))))
-      (let [remaining (pick-books stacks (first combinations))]
-        (if (empty? remaining)
+        (let [prev (peek backtrack-stack)
+              stacks (nth prev 0)
+              potential-picks (nth prev 1)
+              parts (nth prev 2)]
+          (recur stacks
+                 (rest potential-picks)
+                 parts
+                 (pop backtrack-stack))))
+
+      (let [remaining-stacks (pick-books stacks (first potential-picks))]
+        ;; Have we depleted our stacks of books?
+        (if (empty? remaining-stacks)
           true
-          (recur remaining
-                 (pick-combinations remaining (first parts))
-                 (rest parts)
-                 (conj backtrack-info [stacks combinations parts])))))))
+          (recur remaining-stacks
+                 (pick-combinations remaining-stacks (first remaining-parts))
+                 (rest remaining-parts)
+                 (conj backtrack-stack [stacks potential-picks remaining-parts])))))))
 
 (defn price
   "Calculates the best price you can get for a collection of books,
