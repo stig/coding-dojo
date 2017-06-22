@@ -95,8 +95,8 @@
           parts (partitions n max-part-size)
           prices (map sum-price-partitions parts)
           price-parts (sort-partitions-by-price prices parts)
-          piles-of-distinct-books (-> books frequencies vals)]
+          stacks-of-distinct-books (-> books frequencies vals)]
       (loop [[[cost parts] & rest] price-parts]
-        (if (pattern-match? parts piles-of-distinct-books)
+        (if (pattern-match? parts stacks-of-distinct-books)
           cost
           (recur rest))))))
