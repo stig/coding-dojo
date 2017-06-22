@@ -55,18 +55,16 @@
       (remove zero? stacks)
       (recur (update-in stacks [x] dec) xs))))
 
-(defn book-combinations
-  "All the different combinations of indices to pick N books from a
-  collection of indexed piles of books."
-  [books n]
-  ;;  (println "book-combinations:" books n)
-  (combo/combinations (range (count books)) n))
+(defn pick-combinations
+  "All the unique ways to pick N books from a set of stacks."
+  [stacks n]
+  (combo/combinations (range (count stacks)) n))
 
 (defn pattern-match?
   "Can we match this pattern to the books we are pricing?"
   [patterns books]
   (loop [books books
-         combinations (book-combinations books (first patterns))
+         combinations (pick-combinations books (first patterns))
          patterns (rest patterns)
          stack []]
     (if (empty? combinations)
@@ -82,7 +80,7 @@
         (if (empty? remaining)
           true
           (recur remaining
-                 (book-combinations remaining (first patterns))
+                 (pick-combinations remaining (first patterns))
                  (rest patterns)
                  (conj stack [books combinations patterns])))))))
 
