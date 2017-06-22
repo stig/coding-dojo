@@ -60,9 +60,10 @@
   [stacks n]
   (combo/combinations (range (count stacks)) n))
 
-(defn pattern-match?
-  "Is it possible to pick these partitions from these stacks of
-  books?"
+(defn picks-completely?
+  "Is it possible to pick the given partitions from the stacks of books,
+  such that all the stacks are used up and we don't have partitions
+  left to pick?"
   [parts stacks]
   (loop [stacks stacks
          combinations (pick-combinations stacks (first parts))
@@ -94,8 +95,8 @@
           parts (partitions n max-part-size)
           prices (map sum-price-partitions parts)
           price-parts (sort-partitions-by-price prices parts)
-          stacks-of-distinct-books (-> books frequencies vals)]
+          stacks (-> books frequencies vals)]
       (loop [[[cost parts] & rest] price-parts]
-        (if (pattern-match? parts stacks-of-distinct-books)
+        (if (picks-completely? parts stacks)
           cost
           (recur rest))))))
