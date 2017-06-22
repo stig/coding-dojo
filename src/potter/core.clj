@@ -28,8 +28,9 @@
   [discounts]
   (->> discounts keys sort last))
 
-(defn partition-patterns
-  "Candidates of book partitions from a set number of books."
+(defn partitions
+  "Produce all sequence of possible partitions representing N number
+  of books, constrained by a max size for each partition."
   [n max-part-size]
   (->> (repeat n 1)
        combo/partitions
@@ -90,9 +91,9 @@
     0
     (let [n (count books)
           max-part-size (max-partition-size discounts)
-          patterns (partition-patterns n max-part-size)
-          prices (map sum-price-partitions patterns)
-          price-patterns (sorted-price-patterns prices patterns)
+          parts (partitions n max-part-size)
+          prices (map sum-price-partitions parts)
+          price-patterns (sorted-price-patterns prices parts)
           piles-of-distinct-books (-> books frequencies vals)]
       (loop [[[pric pattern] & rest] price-patterns]
         (if (pattern-match? pattern piles-of-distinct-books)
