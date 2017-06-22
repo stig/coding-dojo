@@ -65,27 +65,22 @@
          combinations (book-combinations books (first patterns))
          patterns (rest patterns)
          stack []]
-    ;;    (println "pattern-match?:" books combinations patterns stack)
-    (if (empty? books)
-      true
-      (if (empty? combinations)
-        (if (empty? stack)
-          false
-          (let [prev (peek stack)
-                b (nth prev 0)
-                c (nth prev 1)
-                p (nth prev 2)]
-            ;;            (println "pattern-match? - backtracking: " stack)
-            (recur b (rest c) p (pop stack))))
-        (let [remaining (pick-books books (first combinations))]
-          (if (empty? remaining)
-            true
-            (do
-              ;;              (println "pattern-match? - recursing: " remaining)
-              (recur remaining
-                     (book-combinations remaining (first patterns))
-                     (rest patterns)
-                     (conj stack [books combinations patterns])))))))))
+    (if (empty? combinations)
+      (if (empty? stack)
+        false
+        (let [prev (peek stack)
+              b (nth prev 0)
+              c (nth prev 1)
+              p (nth prev 2)]
+          ;; Backtrack trying alternative combinations
+          (recur b (rest c) p (pop stack))))
+      (let [remaining (pick-books books (first combinations))]
+        (if (empty? remaining)
+          true
+          (recur remaining
+                 (book-combinations remaining (first patterns))
+                 (rest patterns)
+                 (conj stack [books combinations patterns])))))))
 
 (defn price
   [books]
