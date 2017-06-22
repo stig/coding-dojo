@@ -37,11 +37,12 @@
        (map #(map count %))
        (remove #(> (first %) max-part-size))))
 
-(defn sorted-price-patterns
-  "Zip prices & associated patterns together,
-  and sort by price so that best pattern comes first."
-  [prices patterns]
-  (->> (map vector prices patterns)
+(defn sort-partitions-by-price
+  "Zip sequences of prices & partitions together,
+  and sort by price so the cheapest sequence of partitions comes
+  first."
+  [prices parts]
+  (->> (map vector prices parts)
        (sort-by first)))
 
 (defn pick-books
@@ -93,9 +94,9 @@
           max-part-size (max-partition-size discounts)
           parts (partitions n max-part-size)
           prices (map sum-price-partitions parts)
-          price-patterns (sorted-price-patterns prices parts)
+          price-parts (sort-partitions-by-price prices parts)
           piles-of-distinct-books (-> books frequencies vals)]
-      (loop [[[pric pattern] & rest] price-patterns]
+      (loop [[[pric pattern] & rest] price-parts]
         (if (pattern-match? pattern piles-of-distinct-books)
           pric
           (recur rest))))))
