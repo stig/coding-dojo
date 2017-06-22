@@ -96,7 +96,7 @@
           prices (map sum-price-partitions parts)
           price-parts (sort-partitions-by-price prices parts)
           stacks (-> books frequencies vals)]
-      (loop [[[cost parts] & rest] price-parts]
+      (loop [[[price parts] & rest] price-parts]
         (if (picks-completely? parts stacks)
-          cost
+          price
           (recur rest))))))
