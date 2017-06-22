@@ -16,16 +16,18 @@
         multiplier (- 1 discount)]
     (* book-price n multiplier)))
 
-(def max-discount-books
+(defn max-partition-size
+  "Given a map of discounts picks the max partition size to consider."
+  [discounts]
   (->> discounts keys sort last))
 
 (defn partition-patterns
   "Candidates of book partitions from a set number of books."
-  [n]
+  [n max-part-size]
   (->> (repeat n 1)
        combo/partitions
        (map #(map count %))
-       (remove #(> (first %) max-discount-books))))
+       (remove #(> (first %) max-part-size))))
 
 (defn price-partitions
   "Price collection of book partitions"
@@ -87,7 +89,8 @@
   (if (empty? books)
     0
     (let [n (count books)
-          patterns (partition-patterns n)
+          max-part-size (max-partition-size discounts)
+          patterns (partition-patterns n max-part-size)
           prices (map price-partitions patterns)
           price-patterns (sorted-price-patterns prices patterns)
           piles-of-distinct-books (-> books frequencies vals)]
