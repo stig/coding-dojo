@@ -10,7 +10,7 @@
    5 25/100})
 
 (defn price-partition
-  "Price a partition of books."
+  "Price a partition of N distinct books."
   [n]
   (let [discount (or (discounts n) 0)
         multiplier (- 1 discount)]
