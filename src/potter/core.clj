@@ -87,6 +87,9 @@
                  (conj backtrack-info [stacks combinations patterns])))))))
 
 (defn price
+  "Calculates the best price you can get for a collection of books,
+  by splitting it into different partitions and getting the optimal
+  discount achievable."
   [books]
   (if (empty? books)
     0
