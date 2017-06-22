@@ -67,7 +67,7 @@
   [parts stacks]
   (loop [stacks stacks
          combinations (pick-combinations stacks (first parts))
-         patterns (rest parts)
+         parts (rest parts)
          backtrack-info []]
     (if (empty? combinations)
       (if (empty? backtrack-info)
@@ -82,9 +82,9 @@
         (if (empty? remaining)
           true
           (recur remaining
-                 (pick-combinations remaining (first patterns))
-                 (rest patterns)
-                 (conj backtrack-info [stacks combinations patterns])))))))
+                 (pick-combinations remaining (first parts))
+                 (rest parts)
+                 (conj backtrack-info [stacks combinations parts])))))))
 
 (defn price
   "Calculates the best price you can get for a collection of books,
