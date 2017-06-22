@@ -9,26 +9,26 @@
    4 20/100
    5 25/100})
 
-(defn price-partition
+(defn- price-partition
   "Price a partition of N distinct books."
   [n]
   (let [discount (or (discounts n) 0)
         multiplier (- 1 discount)]
     (* book-price n multiplier)))
 
-(defn sum-price-partitions
+(defn- sum-price-partitions
   "Calculate the sum of a sequence of book partitions."
   [parts]
   (->> parts
        (map price-partition)
        (reduce +)))
 
-(defn max-partition-size
+(defn- max-partition-size
   "Given a map of discounts picks the max partition size to consider."
   [discounts]
   (->> discounts keys sort last))
 
-(defn partitions
+(defn- partitions
   "Produce all sequence of possible partitions representing N number
   of books, constrained by a max size for each partition."
   [n max-part-size]
@@ -37,7 +37,7 @@
        (map #(map count %))
        (remove #(> (first %) max-part-size))))
 
-(defn sort-partitions-by-price
+(defn- sort-partitions-by-price
   "Zip sequences of prices & partitions together,
   and sort by price so the cheapest sequence of partitions comes
   first."
@@ -45,7 +45,7 @@
   (->> (map vector prices parts)
        (sort-by first)))
 
-(defn pick-books
+(defn- pick-books
   "Pick books from the given stacks according to indices given; return
   remaining stacks of books."
   [stacks indices]
@@ -55,12 +55,12 @@
       (remove zero? stacks)
       (recur (update-in stacks [x] dec) xs))))
 
-(defn pick-combinations
+(defn- pick-combinations
   "All the unique ways to pick N books from a set of stacks."
   [stacks n]
   (combo/combinations (range (count stacks)) n))
 
-(defn picks-completely?
+(defn- picks-completely?
   "Is it possible to pick the given partitions from the stacks of books,
   such that all the stacks are used up?"
   [parts stacks]
