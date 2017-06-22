@@ -46,14 +46,14 @@
        (sort-by first)))
 
 (defn pick-books
-  "Pick books according to indices given; return
+  "Pick books from the given stacks according to indices given; return
   remaining stacks of books."
-  [books indices]
-  ;;  (println "pick-books:" books indices)
-  (if (empty? indices)
-    (remove zero? books)
-    (recur (update-in (vec books) [(first indices)] dec)
-           (rest indices))))
+  [stacks indices]
+  (loop [stacks (vec stacks) ;; update-in *really* doesn't like seqs, hence this hack
+         [x & xs] indices]
+    (if-not x
+      (remove zero? stacks)
+      (recur (update-in stacks [x] dec) xs))))
 
 (defn book-combinations
   "All the different combinations of indices to pick N books from a
