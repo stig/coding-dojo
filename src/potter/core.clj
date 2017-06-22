@@ -61,28 +61,29 @@
   (combo/combinations (range (count stacks)) n))
 
 (defn pattern-match?
-  "Can we match this pattern to the books we are pricing?"
-  [patterns books]
-  (loop [books books
-         combinations (pick-combinations books (first patterns))
-         patterns (rest patterns)
-         stack []]
+  "Is it possible to pick these partitions from these stacks of
+  books?"
+  [parts stacks]
+  (loop [stacks stacks
+         combinations (pick-combinations stacks (first parts))
+         patterns (rest parts)
+         backtrack-info []]
     (if (empty? combinations)
-      (if (empty? stack)
+      (if (empty? backtrack-info)
         false
-        (let [prev (peek stack)
+        (let [prev (peek backtrack-info)
               b (nth prev 0)
               c (nth prev 1)
               p (nth prev 2)]
           ;; Backtrack trying alternative combinations
-          (recur b (rest c) p (pop stack))))
-      (let [remaining (pick-books books (first combinations))]
+          (recur b (rest c) p (pop backtrack-info))))
+      (let [remaining (pick-books stacks (first combinations))]
         (if (empty? remaining)
           true
           (recur remaining
                  (pick-combinations remaining (first patterns))
                  (rest patterns)
-                 (conj stack [books combinations patterns])))))))
+                 (conj backtrack-info [stacks combinations patterns])))))))
 
 (defn price
   [books]
