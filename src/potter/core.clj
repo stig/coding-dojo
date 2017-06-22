@@ -16,6 +16,13 @@
         multiplier (- 1 discount)]
     (* book-price n multiplier)))
 
+(defn sum-price-partitions
+  "Calculate the sum of a sequence of book partitions."
+  [parts]
+  (->> parts
+       (map price-partition)
+       (reduce +)))
+
 (defn max-partition-size
   "Given a map of discounts picks the max partition size to consider."
   [discounts]
@@ -28,13 +35,6 @@
        combo/partitions
        (map #(map count %))
        (remove #(> (first %) max-part-size))))
-
-(defn price-partitions
-  "Price collection of book partitions"
-  [parts]
-  (->> parts
-       (map price-partition)
-       (reduce +)))
 
 (defn sorted-price-patterns
   "Zip prices & associated patterns together,
@@ -91,7 +91,7 @@
     (let [n (count books)
           max-part-size (max-partition-size discounts)
           patterns (partition-patterns n max-part-size)
-          prices (map price-partitions patterns)
+          prices (map sum-price-partitions patterns)
           price-patterns (sorted-price-patterns prices patterns)
           piles-of-distinct-books (-> books frequencies vals)]
       (loop [[[pric pattern] & rest] price-patterns]
